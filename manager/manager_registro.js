@@ -1,5 +1,6 @@
 $(document).ready(function(){
 
+    //hola
     function valida_telefono(){
         telefono = $('#registro_telefono').val();
         telefono = parseInt(telefono);
