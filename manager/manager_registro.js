@@ -1,6 +1,76 @@
 $(document).ready(function(){
 
-    //hola
+    function valida_confirmacion_password(){
+        if($('#registro_password').val() != $('#registro_password_confirmacion').val()){
+            swal('Upps', 'Las contraseñas no coinciden, favor de verificar', 'warning');
+            $('#registro_password_confirmacion').val("");
+            return false;
+        }else{
+            registro_password = $('#registro_password').val();
+            //A partir de aqui usen la nomenclatura para su ajax q mas les agrade
+
+            //Recoleccion de datos validados
+            recolector_de_informacion = "registro_nombre" + registro_nombre + 
+                                        "&registro_paterno" + registro_paterno + 
+                                        "&registro_materno" + registro_materno + 
+                                        "&registro_fecha_nacimiento" + registro_fecha_nacimiento +
+                                        "&registro_telefono" + registro_telefono +
+                                        "&registro_carrera" + registro_carrera + 
+                                        "&registro_mail" + registro_mail + 
+                                        "&registro_password" + registro_password;
+
+            $.ajax({
+
+                type: 'POST',
+                data: recolector_de_informacion,
+                url: 'control/control_registro.php',
+                success: resultado => {
+                    //Dejare pendiente aqui apra trabajar en el control 1 min para copiar
+                }
+
+            });
+
+        }
+    }
+
+    function valida_confirmacion_email(){
+        //Garantizamos que mail y su confirmacion sean iguales
+        //la funcion pasada ya nos esta diciendo que o esta bien o esta bien asi que esta validacion
+        //es mas corta
+        if($('#registro_mail').val() != $('#registro_mail_confirmacion').val()){
+            //De no ser iguales, avisamos y limpiamos el campo para obligar al usuario a reingresar el mail
+            swal('Upps', 'Los emails no coinciden, favor de verificar', 'warning');
+            $('#registro_mail_confirmacion').val(""); // limpiamos el control
+            return false;// paramos el flujo 
+        }else{
+            // al ser iguales
+            registro_mail = $('#registro_mail').val();//guardo el valor del primer mail
+            valida_confirmacion_password();//invoco siguiente validacion
+        }
+    }
+
+    function valida_construcción_email(){
+        cadena = s('#registro_mail').val();//lectura del control HTML
+        //RegExp para validar construccion de email (no es mia, la encontré pero aplica muy bien)
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(cadena)){
+            //De ser positiva nos lanzamos a la siguiente validacion
+            valida_confirmacion_email();
+        }else{
+            //de ser negativa avisamos
+            swal('Upps', 'Ingresa un email valido por favor', 'warning');
+            return false;
+        }
+    }
+
+    function valida_seleccion_carrera(){
+        carrera=$('#registro_carrera').val();
+        carrera=carrera.toUpperCase();
+        if(carrera == 'SIS' || carrera == 'IND' || carrera == 'GES'){
+            registro_carrera = carrera;
+            valida_construcción_email();
+        }
+    }
+
     function valida_telefono(){
         telefono = $('#registro_telefono').val();
         telefono = parseInt(telefono);
@@ -168,7 +238,6 @@ $(document).ready(function(){
         }
     }
 
-    //1
     $('#btn_registro_usuario').click(function(){
         valida_vacios();
     });
